@@ -1,6 +1,8 @@
 package s3link
 
 import (
+	"time"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -434,7 +436,27 @@ func (s *S3Link) ListMultipartUploadsWithContext(ctx aws.Context, input *s3.List
 }
 
 func (s *S3Link) ListMultipartUploadsPagesWithContext(ctx aws.Context, input *s3.ListMultipartUploadsInput, fn func(*s3.ListMultipartUploadsOutput, bool) bool, opts ...request.Option) error {
-	return NotImplemented
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *s3.ListMultipartUploadsInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.ListMultipartUploadsRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*s3.ListMultipartUploadsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
 }
 
 func (s *S3Link) ListObjectVersionsWithContext(ctx aws.Context, input *s3.ListObjectVersionsInput, opts ...request.Option) (*s3.ListObjectVersionsOutput, error) {
@@ -445,7 +467,27 @@ func (s *S3Link) ListObjectVersionsWithContext(ctx aws.Context, input *s3.ListOb
 }
 
 func (s *S3Link) ListObjectVersionsPagesWithContext(ctx aws.Context, input *s3.ListObjectVersionsInput, fn func(*s3.ListObjectVersionsOutput, bool) bool, opts ...request.Option) error {
-	return NotImplemented
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *s3.ListObjectVersionsInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.ListObjectVersionsRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*s3.ListObjectVersionsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
 }
 
 func (s *S3Link) ListObjectsWithContext(ctx aws.Context, input *s3.ListObjectsInput, opts ...request.Option) (*s3.ListObjectsOutput, error) {
@@ -456,7 +498,27 @@ func (s *S3Link) ListObjectsWithContext(ctx aws.Context, input *s3.ListObjectsIn
 }
 
 func (s *S3Link) ListObjectsPagesWithContext(ctx aws.Context, input *s3.ListObjectsInput, fn func(*s3.ListObjectsOutput, bool) bool, opts ...request.Option) error {
-	return NotImplemented
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *s3.ListObjectsInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.ListObjectsRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*s3.ListObjectsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
 }
 
 func (s *S3Link) ListObjectsV2WithContext(ctx aws.Context, input *s3.ListObjectsV2Input, opts ...request.Option) (*s3.ListObjectsV2Output, error) {
@@ -467,7 +529,27 @@ func (s *S3Link) ListObjectsV2WithContext(ctx aws.Context, input *s3.ListObjects
 }
 
 func (s *S3Link) ListObjectsV2PagesWithContext(ctx aws.Context, input *s3.ListObjectsV2Input, fn func(*s3.ListObjectsV2Output, bool) bool, opts ...request.Option) error {
-	return NotImplemented
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *s3.ListObjectsV2Input
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.ListObjectsV2Request(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*s3.ListObjectsV2Output), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
 }
 
 func (s *S3Link) ListPartsWithContext(ctx aws.Context, input *s3.ListPartsInput, opts ...request.Option) (*s3.ListPartsOutput, error) {
@@ -478,7 +560,27 @@ func (s *S3Link) ListPartsWithContext(ctx aws.Context, input *s3.ListPartsInput,
 }
 
 func (s *S3Link) ListPartsPagesWithContext(ctx aws.Context, input *s3.ListPartsInput, fn func(*s3.ListPartsOutput, bool) bool, opts ...request.Option) error {
-	return NotImplemented
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *s3.ListPartsInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.ListPartsRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	for p.Next() {
+		if !fn(p.Page().(*s3.ListPartsOutput), !p.HasNextPage()) {
+			break
+		}
+	}
+
+	return p.Err()
 }
 
 func (s *S3Link) PutBucketAccelerateConfigurationWithContext(ctx aws.Context, input *s3.PutBucketAccelerateConfigurationInput, opts ...request.Option) (*s3.PutBucketAccelerateConfigurationOutput, error) {
@@ -706,17 +808,141 @@ func (s *S3Link) WriteGetObjectResponseWithContext(ctx aws.Context, input *s3.Wr
 }
 
 func (s *S3Link) WaitUntilBucketExistsWithContext(ctx aws.Context, input *s3.HeadBucketInput, opts ...request.WaiterOption) error {
-	return NotImplemented
+	w := request.Waiter{
+		Name:        "WaitUntilBucketExists",
+		MaxAttempts: 20,
+		Delay:       request.ConstantWaiterDelay(5 * time.Second),
+		Acceptors: []request.WaiterAcceptor{
+			{
+				State:    request.SuccessWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 200,
+			},
+			{
+				State:    request.SuccessWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 301,
+			},
+			{
+				State:    request.SuccessWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 403,
+			},
+			{
+				State:    request.RetryWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 404,
+			},
+		},
+		Logger: s.logger,
+		NewRequest: func(opts []request.Option) (*request.Request, error) {
+			var inCpy *s3.HeadBucketInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.HeadBucketRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+	w.ApplyOptions(opts...)
+
+	return w.WaitWithContext(ctx)
 }
 
 func (s *S3Link) WaitUntilBucketNotExistsWithContext(ctx aws.Context, input *s3.HeadBucketInput, opts ...request.WaiterOption) error {
-	return NotImplemented
+	w := request.Waiter{
+		Name:        "WaitUntilBucketNotExists",
+		MaxAttempts: 20,
+		Delay:       request.ConstantWaiterDelay(5 * time.Second),
+		Acceptors: []request.WaiterAcceptor{
+			{
+				State:    request.SuccessWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 404,
+			},
+		},
+		Logger: s.logger,
+		NewRequest: func(opts []request.Option) (*request.Request, error) {
+			var inCpy *s3.HeadBucketInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.HeadBucketRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+	w.ApplyOptions(opts...)
+
+	return w.WaitWithContext(ctx)
 }
 
 func (s *S3Link) WaitUntilObjectExistsWithContext(ctx aws.Context, input *s3.HeadObjectInput, opts ...request.WaiterOption) error {
-	return NotImplemented
+	w := request.Waiter{
+		Name:        "WaitUntilObjectExists",
+		MaxAttempts: 20,
+		Delay:       request.ConstantWaiterDelay(5 * time.Second),
+		Acceptors: []request.WaiterAcceptor{
+			{
+				State:    request.SuccessWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 200,
+			},
+			{
+				State:    request.RetryWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 404,
+			},
+		},
+		Logger: s.logger,
+		NewRequest: func(opts []request.Option) (*request.Request, error) {
+			var inCpy *s3.HeadObjectInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.HeadObjectRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+	w.ApplyOptions(opts...)
+
+	return w.WaitWithContext(ctx)
 }
 
 func (s *S3Link) WaitUntilObjectNotExistsWithContext(ctx aws.Context, input *s3.HeadObjectInput, opts ...request.WaiterOption) error {
-	return NotImplemented
+	w := request.Waiter{
+		Name:        "WaitUntilObjectNotExists",
+		MaxAttempts: 20,
+		Delay:       request.ConstantWaiterDelay(5 * time.Second),
+		Acceptors: []request.WaiterAcceptor{
+			{
+				State:    request.SuccessWaiterState,
+				Matcher:  request.StatusWaiterMatch,
+				Expected: 404,
+			},
+		},
+		Logger: s.logger,
+		NewRequest: func(opts []request.Option) (*request.Request, error) {
+			var inCpy *s3.HeadObjectInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := s.HeadObjectRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+	w.ApplyOptions(opts...)
+
+	return w.WaitWithContext(ctx)
 }

@@ -1,19 +1,17 @@
 package s3link
 
 import (
-	"errors"
-
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
-var NotImplemented = errors.New("Not implemented")
-
 var _ s3iface.S3API = (*S3Link)(nil)
 
 // S3Link extends S3Base to create a Storj client atop an S3API compliant interface.
 type S3Link struct {
+	logger aws.Logger
 }
 
 func New() s3iface.S3API {
