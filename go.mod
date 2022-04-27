@@ -8,7 +8,7 @@ require (
 	storj.io/gateway v1.7.0
 	storj.io/gateway-mt v1.27.1
 	storj.io/minio v0.0.0-20220404203534-ae15cc41053b
-	storj.io/uplink v1.8.2
+	storj.io/uplink v1.8.2-0.20220426114611-5580401cd102
 )
 
 require (
@@ -138,7 +138,7 @@ require (
 	gopkg.in/jcmturner/gokrb5.v7 v7.5.0 // indirect
 	gopkg.in/jcmturner/rpc.v1 v1.1.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	storj.io/common v0.0.0-20220405183405-ffdc3ab808c6 // indirect
+	storj.io/common v0.0.0-20220414110316-a5cb7172d6bf // indirect
 	storj.io/drpc v0.0.30 // indirect
 	storj.io/private v0.0.0-20220323114243-08c4b5e752f4 // indirect
 )
