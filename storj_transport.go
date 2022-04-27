@@ -15,24 +15,22 @@ import (
 	"storj.io/uplink"
 )
 
-// NoIOTransport can be used as an http.Transport, but uses the Storj Network directly via DRCP, not HTTP.
-type NoIOTransport struct {
+// NewHTTPClient returns a new http.Client with StorjTransport as the Transport.
+// client := s3.New(awsSession, aws.NewConfig().WithHTTPClient(&s3link.NewHTTPClient()}))
+// downloader := s3manager.NewDownloader(awsSession, func(d *s3manager.Downloader) { d.S3 = client })
+// uploader := s3manager.NewUploader(awsSession, func(u *s3manager.Uploader) { u.S3 = client })
+func NewHTTPClient() *http.Client {
+	return &http.Client{Transport: NewStorjTransport()}
+}
+
+// StorjTransport can be used as an http.Transport, but uses the Storj Network directly via DRCP, not HTTP.
+type StorjTransport struct {
 	r *mux.Router
 }
 
-func NewHTTPClient() *http.Client {
-	return &http.Client{Transport: NewNoIOTransport()}
-}
-
-// NoIOTransport can be used as an http.Client{Transport: NewNoIOTransport()},
-//  s3.New(awsSession, aws.NewConfig().WithHTTPClient(&http.Client{Transport: NewNoIOTransport()}))
-//  downloader := s3manager.NewDownloader(awsSession, func(d *s3manager.Downloader) {
-//     d.S3 = s3.New(awsSession, aws.NewConfig().WithHTTPClient(&http.Client{Transport: NewNoIOTransport()}))
-//   })
-//  uploader := s3manager.NewUploader(awsSession, func(u *s3manager.Uploader) {
-//     u.S3 = s3.New(awsSession, aws.NewConfig().WithHTTPClient())
-//  })
-func NewNoIOTransport() NoIOTransport {
+// NewStorjTransport can be used as an http.Client{Transport: NewStorjTransport()}.
+// A serialized Storj access grant should be passed in via the environment variables "ACCESS".
+func NewStorjTransport() StorjTransport {
 	GlobalActiveCred = auth.Credentials{AccessKey: "placeholder", SecretKey: "placeholder"}
 	GlobalServerRegion = "us-east-1"
 
@@ -59,11 +57,11 @@ func NewNoIOTransport() NoIOTransport {
 		panic("error starting gateway layer")
 	}
 	minio.RegisterAPIRouter(r, gatewayLayer, []string{"s3.amazonaws.com"}, 5)
-	return NoIOTransport{r: r}
+	return StorjTransport{r: r}
 }
 
 // RoundTrip implements the Transport interface.
-func (n NoIOTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
+func (n StorjTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 	req.Header.Set("Host", "s3.amazonaws.com") // I'm not sure yet why this is needed
 	rec := httptest.NewRecorder()
 	n.r.ServeHTTP(rec, req)
