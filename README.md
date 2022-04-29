@@ -12,7 +12,7 @@ Thus an initial attempt to integrate with the AWS SDK for Go by implementing [an
 
 # usage
 
-The Gateway-MT / Minio libraries used by this code implement request signing.  Thus, the credentials and host names must match between the AWS SDK for Go session variable and the S3Link logic.  EG: 
+The Gateway-ST / Minio libraries used by this code implement request signing.  Thus, the credentials and host names must match between the AWS SDK for Go session variable and the S3Link logic.  EG: 
 
 
 		awsSession, _ := session.NewSession(&aws.Config{
