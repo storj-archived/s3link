@@ -9,3 +9,19 @@ Analysis of various Amazon SDKs indicates it would be difficult to code generate
 Indeed [and perhaps because they span service types], most Amazon SDKs can be described as having "HTTP as the architecture".
 
 Thus an initial attempt to integrate with the AWS SDK for Go by implementing [an interface](https://github.com/aws/aws-sdk-go/blob/main/service/s3/s3iface/interface.go) was abandoned.  This more language agnostic solution accepts the overhead of serializing code to HTTP streams, which are then processed without actually sending those streams.  Application logic from Storj's [Gateway-ST](https://github.com/storj/gateway-st/) project handles adapting the request back to native [libuplink](https://github.com/storj/uplink) Storj Network requests.
+
+# usage
+
+The Gateway-MT / Minio libraries used by this code implement request signing.  Thus, the credentials and host names must match between the AWS SDK for Go session variable and the S3Link logic.  EG: 
+
+
+		awsSession, _ := session.NewSession(&aws.Config{
+			Credentials:      credentials.NewStaticCredentials("placeholder", "placeholder", ""),
+			Endpoint:         aws.String("http://s3.amazonaws.com"),
+			Region:           aws.String("us-east-1"),
+			S3ForcePathStyle: aws.Bool(true),
+		})
+
+		client := s3.New(awsSession, aws.NewConfig().WithHTTPClient(s3link.NewHTTPClient()))
+		downloader := s3manager.NewDownloader(awsSession, func(d *s3manager.Downloader) { d.S3 = client }),
+		uploader := s3manager.NewUploader(awsSession, func(u *s3manager.Uploader) { u.S3 = client }),
